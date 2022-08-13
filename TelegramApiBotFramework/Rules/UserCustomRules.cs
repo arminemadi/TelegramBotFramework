@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace TelegramBotFramework.Rules
 {
-    public interface ICustomRule
+    public abstract class UserCustomRules
     {
-        string Name { get; }
-        Task<object> GetValue(long userId);
+        public abstract IReadOnlyDictionary<string,ICustomRule> Rules { get; }
+
+
     }
 }

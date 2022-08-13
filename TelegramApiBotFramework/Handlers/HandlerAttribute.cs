@@ -17,24 +17,7 @@ namespace TelegramBotFramework.Handlers
 
         public UpdateType Type { get; }
         public bool AlwaysRun { get; protected set; }
-        public Dictionary<string, IComparable> CustomRules { get; set; } = new();
         public int Priority { get; set; }
 
-        protected bool CheckCustomRules(List<ICustomRule>? rules)
-        {
-            if (CustomRules.Count == 0)
-               return true;
-            if (rules == null || CustomRules.Count > rules.Count)
-                throw new Exception("Invalid rules configuration.");
-            foreach (var rule in rules)
-            {
-                if (CustomRules.TryGetValue(rule.Name, out var handlerRule))
-                {
-                    if (handlerRule.CompareTo(rule) != 0)
-                        return false;
-                }
-            }
-            return true;
-        }
     }
 }

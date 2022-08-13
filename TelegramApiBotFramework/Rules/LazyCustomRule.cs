@@ -8,24 +8,18 @@ namespace TelegramBotFramework.Rules
 {
     public abstract class LazyCustomRule : ICustomRule
     {
-        private IComparable? _rule;
+        private object? _rule;
 
         protected LazyCustomRule(string name)
         {
             Name = name;
         }
         public string Name { get; }
-
-        public IComparable Rule
+        public async Task<object> GetValue(long userId)
         {
-            get
-            {
-                if (_rule == null)
-                    _rule = GetRule();
-                return _rule;
-            }
+            return _rule ??= await Initialize();
         }
 
-        protected abstract IComparable GetRule();
+        protected abstract Task<object> Initialize();
     }
 }
