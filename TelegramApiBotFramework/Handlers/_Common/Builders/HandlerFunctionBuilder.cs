@@ -36,8 +36,8 @@ namespace TelegramBotFramework.Handlers._Common.Builders
                     var ctorExpression = Expression.New(ctor, contextPram);
                     var func = Expression.Lambda<Func<TContext, THandler>>(ctorExpression, contextPram).Compile();
                     if (type.GetCustomAttribute(attributeType) is not TAttribute attribute)
-                        throw new TelegramBotFrameworkException($"Unable to cast into handle attribute.");
-                    var rules = type.GetCustomAttributes<CustomRuleAttribute>().ToList();
+                        throw new TelegramBotFrameworkException(ExceptionsMessages.FailToCastAttribute);
+                    var rules = type.GetCustomAttributes<CustomHandlerRuleAttribute>().ToList();
                     result.Add(new ReadyHandler<TAttribute, TContext, THandler>(
                         type.Name, attribute, func, rules));
                 }

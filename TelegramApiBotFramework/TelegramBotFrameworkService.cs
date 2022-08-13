@@ -10,7 +10,9 @@ using Telegram.Bot.Types.Enums;
 using TelegramBotFramework.Exceptions;
 using TelegramBotFramework.Handlers;
 using TelegramBotFramework.Handlers._Common;
+using TelegramBotFramework.Handlers._Common.Attributes;
 using TelegramBotFramework.Handlers._Common.Builders;
+using TelegramBotFramework.Handlers.CallbackQueries;
 using TelegramBotFramework.Handlers.Messages;
 using TelegramBotFramework.Rules;
 
@@ -24,11 +26,14 @@ namespace TelegramBotFramework
 
         private static readonly List<ReadyHandler<MessageHandlerAttribute, TContext, MessageHandler<TContext>>>
             MessageHandlers;
+        private static readonly List<ReadyHandler<CallbackQueryHandlerAttribute, TContext, CallbackQueryHandler<TContext>>>
+            CallbackQueriesHandlers;
 
         static TelegramBotFrameworkService()
         {
             var builder = new HandlerFunctionBuilder<TContext>();
             MessageHandlers = builder.BuildConstructorFunctions<MessageHandlerAttribute, MessageHandler<TContext>>();
+            CallbackQueriesHandlers = builder.BuildConstructorFunctions<CallbackQueryHandlerAttribute, CallbackQueryHandler<TContext>>();
         }
 
         public TelegramBotFrameworkService(TContext context,
@@ -51,6 +56,8 @@ namespace TelegramBotFramework
             _logger.LogDebug("Handling update with type {type}", update.Type);
             if (update.Type == UpdateType.Message)
                 await HandleMessage(update.Message ?? throw new NullReferenceException());
+            else if (update.Type == UpdateType.CallbackQuery)
+                await HandleCallbackQuery(update.CallbackQuery ?? throw new NullReferenceException());
             _logger.LogDebug("Handling update with type {type} finished.", update.Type);
         }
 
@@ -77,9 +84,25 @@ namespace TelegramBotFramework
                     return;
             }
         }
-
-        private async Task<bool> CheckCustomRules<THandler>(
-            ReadyHandler<MessageHandlerAttribute, TContext, THandler> handler, long userId)
+        private async Task HandleCallbackQuery(CallbackQuery query)
+        {
+            var userId = query.From.Id;
+            foreach (var queryHandler in CallbackQueriesHandlers)
+            {
+                if (queryHandler.Attribute.MustExecute(query) == false)
+                    continue;
+                if (await CheckCustomRules(
+                        queryHandler,
+                        userId) == false)
+                    continue;
+                var handler = queryHandler.ConstructorFunc(_context);
+                var handlerResult = await handler.Execute(query);
+                if (handlerResult)
+                    return;
+            }
+        }
+        private async Task<bool> CheckCustomRules<THandler , TAttribute>(
+            ReadyHandler<TAttribute, TContext, THandler> handler, long userId) where TAttribute : HandlerAttribute
         {
             if (handler.Rules.Count == 0)
                 return true;

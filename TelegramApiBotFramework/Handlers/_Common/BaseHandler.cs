@@ -14,6 +14,6 @@ namespace TelegramBotFramework.Handlers._Common
         {
             Context = context;
         }
-        public abstract Task<bool> Execute(TExecute executeModel);
+        public abstract Task<bool> Execute(TExecute model);
     }
 }

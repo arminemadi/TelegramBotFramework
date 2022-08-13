@@ -11,22 +11,22 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
 {
     public abstract class TextContentHandlerAttribute : HandlerAttribute
     {
-        protected TextContentHandlerAttribute(string content , UpdateType updateType) : base(updateType)
+        protected TextContentHandlerAttribute(string attributeContent , UpdateType updateType) : base(updateType)
         {
-            Content = content;
+            AttributeContent = attributeContent;
             AlwaysRun = false;
         }
         protected TextContentHandlerAttribute(UpdateType updateType) : base(updateType)
         {
             AlwaysRun = true;
         }
-        public string? Content { get; }
+        public string? AttributeContent { get; }
         public bool StartWith { get; set; } = false;
         public bool EndWith { get; set; } = false;
         public bool Equal { get; set; } = true;
-        public bool Normalize { get; set; } = true;
+        public bool NormalizeRequest { get; set; } = true;
         public bool Segmented { get; set; } = false;
-        public int? SegmentsCount { get; set; }
+        public int SegmentsCount { get; set; } = -1;
         public string? SegmentSplit { get; set; }
 
         public bool MustExecute(in string? content)
@@ -37,7 +37,7 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
             var normalizedContent = GetMessage(content);
             if (string.IsNullOrWhiteSpace(normalizedContent))
                 return false;
-            if (string.IsNullOrWhiteSpace(Content))
+            if (string.IsNullOrWhiteSpace(AttributeContent))
                 return false;
             if (CheckEqual(normalizedContent))
                 return true;
@@ -54,7 +54,7 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
         {
             if (content == null)
                 return null;
-            if (Normalize)
+            if (NormalizeRequest)
                 return content.ToLower().Trim();
             return content;
         }
@@ -63,19 +63,19 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
         {
             if (Equal == false)
                 return false;
-            return content == Content;
+            return content == AttributeContent;
         }
         private bool CheckStartWith(in string content)
         {
             if (StartWith == false)
                 return false;
-            return Content.StartsWith(content);
+            return content.StartsWith(AttributeContent);
         }
         private bool CheckEndWith(in string content)
         {
             if (EndWith == false)
                 return false;
-            return Content.EndsWith(content);
+            return content.EndsWith(AttributeContent);
         }
 
         private bool CheckSegments(in string content)
@@ -83,15 +83,15 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
             if (Segmented == false)
                 return false;
             if (SegmentSplit == null)
-                throw new TelegramBotFrameworkException("Split segment cannot be null.");
-            var split = SegmentsCount.HasValue
-                ? content.Split(SegmentSplit, SegmentsCount.Value)
+                throw new TelegramBotFrameworkException(ExceptionsMessages.SplitSegmentNull);
+            var split = SegmentsCount != -1
+                ? content.Split(SegmentSplit, SegmentsCount)
                 : content.Split(SegmentSplit);
             if (split.Length == 0)
                 return false;
-            if (SegmentsCount.HasValue && split.Length != SegmentsCount.Value)
+            if (SegmentsCount != -1 && split.Length != SegmentsCount)
                 return false;
-            if (Content != null && split[0] != Content)
+            if (AttributeContent != null && split[0] != AttributeContent)
                 return false;
             return true;
         }

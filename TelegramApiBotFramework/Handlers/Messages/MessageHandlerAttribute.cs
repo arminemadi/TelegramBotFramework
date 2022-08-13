@@ -7,7 +7,7 @@ namespace TelegramBotFramework.Handlers.Messages;
 
 public class MessageHandlerAttribute : TextContentHandlerAttribute
 {
-    public MessageHandlerAttribute(string content) : base(content, UpdateType.Message)
+    public MessageHandlerAttribute(string attributeContent) : base(attributeContent, UpdateType.Message)
     {
     }
 

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace TelegramBotFramework.Rules
 {
-    public class CustomRuleAttribute : Attribute
+    public class CustomHandlerRuleAttribute : Attribute
     {
         public string Name { get; }
         public object Value { get; }
 
-        public CustomRuleAttribute(string name , object value)
+        public CustomHandlerRuleAttribute(string name , object value)
         {
             Name = name.ToLower();
             Value = value;

@@ -5,9 +5,10 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using TelegramBotFramework;
 using TelegramBotFramework.DependencyInjection;
+using TelegramBotFramework.Handlers._Common;
 
 var collection = new ServiceCollection();
-collection.AddTelegramBotFramework<BotContext, MyBotRules>("5493976201:AAFH1ztC4b6jZdhNLzO5M3NnJSd7hXpEaa8");
+collection.AddTelegramBotFramework<HandlerContext>("5493976201:AAFH1ztC4b6jZdhNLzO5M3NnJSd7hXpEaa8");
 collection.AddLogging(opt =>
 {
     opt.SetMinimumLevel(LogLevel.Trace);
@@ -23,7 +24,7 @@ while (true)
     foreach (var update in updates)
     {
         using var scope = provider.CreateScope();
-        var framework = scope.ServiceProvider.GetService<TelegramBotFrameworkService<BotContext>>();
+        var framework = scope.ServiceProvider.GetService<TelegramBotFrameworkService<HandlerContext>>();
         await framework.Handle(update);
         offset = update.Id + 1;
     }

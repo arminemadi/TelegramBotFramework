@@ -10,7 +10,7 @@ namespace TelegramBotFramework.Handlers._Common
 {
     public class ReadyHandler<TAttribute, TContext, THandler> where TContext : HandlerContext where TAttribute : HandlerAttribute
     {
-        public ReadyHandler(string name ,TAttribute attribute, Func<TContext, THandler> constructorFunc, IReadOnlyList<CustomRuleAttribute> customRuleAttributes)
+        public ReadyHandler(string name ,TAttribute attribute, Func<TContext, THandler> constructorFunc, IReadOnlyList<CustomHandlerRuleAttribute> customRuleAttributes)
         {
             Name = name;
             Attribute = attribute;
@@ -20,7 +20,7 @@ namespace TelegramBotFramework.Handlers._Common
 
         public string Name { get; }
         public TAttribute Attribute { get; }
-        public IReadOnlyList<CustomRuleAttribute> Rules { get; }
+        public IReadOnlyList<CustomHandlerRuleAttribute> Rules { get; }
         public Func<TContext, THandler> ConstructorFunc { get; }
     }
 }
