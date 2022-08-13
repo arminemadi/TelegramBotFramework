@@ -1,6 +1,6 @@
 ﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using TelegramBotFramework.Handlers.Models;
+using TelegramBotFramework.Handlers._Common;
 
 namespace TelegramBotFramework.Handlers.Messages
 {

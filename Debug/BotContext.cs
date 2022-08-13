@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
-using TelegramBotFramework.Handlers.Models;
+using TelegramBotFramework.Handlers._Common;
 
 namespace Debug
 {

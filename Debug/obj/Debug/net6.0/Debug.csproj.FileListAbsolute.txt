@@ -20,3 +20,13 @@ C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\obj\Debug\net6.0\refin
 C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\obj\Debug\net6.0\Debug.pdb
 C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\obj\Debug\net6.0\Debug.genruntimeconfig.cache
 C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\obj\Debug\net6.0\ref\Debug.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Configuration.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Logging.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Logging.Configuration.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Logging.Console.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Options.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Options.ConfigurationExtensions.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\Debug\bin\Debug\net6.0\Microsoft.Extensions.Primitives.dll

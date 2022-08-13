@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot;
 
-namespace TelegramBotFramework.Handlers.Models
+namespace TelegramBotFramework.Handlers._Common
 {
     public class HandlerContext
     {

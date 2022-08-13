@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "SDwHsUMwjVz/d0fN8k5GXVNBR/5t7jycYyn+qSvTCAoPm4kIwWMCi+7mNVDNJw5/vpmLGIuy5GpOfp/XQs8wqQ==",
+  "dgSpecHash": "/0KZyfDjiZwAYiZwjGNqqDgWLTNa89PN4pIUTHYfIJiYE+zrJJNu3Gwg7p5UqeKtOKWdMYCmBsW0iiC1iDB11A==",
   "success": true,
   "projectFilePath": "C:\\Users\\Armin\\source\\repos\\TelegramApiBotFramework\\TelegramApiBotFramework\\TelegramBotFramework.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Armin\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\6.0.0\\microsoft.extensions.dependencyinjection.6.0.0.nupkg.sha512",
     "C:\\Users\\Armin\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\Armin\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\6.0.1\\microsoft.extensions.logging.abstractions.6.0.1.nupkg.sha512",
     "C:\\Users\\Armin\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
     "C:\\Users\\Armin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
     "C:\\Users\\Armin\\.nuget\\packages\\telegram.bot\\18.0.0\\telegram.bot.18.0.0.nupkg.sha512"

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TelegramBotFramework.Handlers.Models;
 
-namespace TelegramBotFramework.Handlers
+namespace TelegramBotFramework.Handlers._Common
 {
-    public abstract class BaseHandler<TContext,TExecute> where TContext : HandlerContext
+    public abstract class BaseHandler<TContext, TExecute> where TContext : HandlerContext
     {
         protected TContext Context { get; }
 

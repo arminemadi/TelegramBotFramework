@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Telegram.Bot.Types.Enums;
 using TelegramBotFramework.Rules;
 
-namespace TelegramBotFramework.Handlers
+namespace TelegramBotFramework.Handlers._Common.Attributes
 {
     public abstract class HandlerAttribute : Attribute
     {
