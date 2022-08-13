@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace TelegramBotFramework.Rules
 {
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class CustomHandlerRuleAttribute : Attribute
     {
         public string Name { get; }

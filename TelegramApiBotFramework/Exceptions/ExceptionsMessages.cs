@@ -13,5 +13,6 @@ namespace TelegramBotFramework.Exceptions
         public const string SplitSegmentNull = "Split segment cannot be null.";
         public const string HandlerInvalidConstructor = "{0} does not have suitable constructor.";
         public const string FailToCastAttribute = "Unable to cast into handle attribute.";
+        public const string NullUpdate = "Update {0} part is null.";
     }
 }

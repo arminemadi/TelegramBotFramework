@@ -13,7 +13,8 @@ namespace TelegramBotFramework.Handlers._Common.Builders
 {
     public class HandlerFunctionBuilder<TContext> where TContext : HandlerContext
     {
-        public List<ReadyHandler<TAttribute, TContext, THandler>> BuildConstructorFunctions<TAttribute, THandler>() where TAttribute : HandlerAttribute
+        public List<ReadyHandler<TAttribute, TContext, THandler>> BuildConstructorFunctions<TAttribute, THandler>()
+            where TAttribute : HandlerAttribute
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             var result = new List<ReadyHandler<TAttribute, TContext, THandler>>();
@@ -32,20 +33,20 @@ namespace TelegramBotFramework.Handlers._Common.Builders
                     var contextPram = Expression.Parameter(contextType);
                     var ctor = type.GetConstructor(new[] { contextType });
                     if (ctor == null)
-                        throw new TelegramBotFrameworkException(ExceptionsMessages.HandlerInvalidConstructor , type.Name);
+                        throw new TelegramBotFrameworkException(ExceptionsMessages.HandlerInvalidConstructor,
+                            type.Name);
                     var ctorExpression = Expression.New(ctor, contextPram);
                     var func = Expression.Lambda<Func<TContext, THandler>>(ctorExpression, contextPram).Compile();
-                    if (type.GetCustomAttribute(attributeType) is not TAttribute attribute)
+                    var attributes = type.GetCustomAttributes<TAttribute>().ToList();
+                    if (attributes.Count == 0)
                         throw new TelegramBotFrameworkException(ExceptionsMessages.FailToCastAttribute);
                     var rules = type.GetCustomAttributes<CustomHandlerRuleAttribute>().ToList();
                     result.Add(new ReadyHandler<TAttribute, TContext, THandler>(
-                        type.Name, attribute, func, rules));
+                        type.Name, attributes, func, rules));
                 }
-
             }
 
-            return result.OrderByDescending(Q => Q.Attribute.AlwaysRun)
-                .ThenByDescending(Q => Q.Attribute.Priority).ToList();
+            return result.OrderByDescending(Q => Q.Attributes.Max(Q => Q.Priority)).ToList();
         }
     }
 }

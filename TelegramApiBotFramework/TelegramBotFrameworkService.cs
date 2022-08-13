@@ -26,14 +26,17 @@ namespace TelegramBotFramework
 
         private static readonly List<ReadyHandler<MessageHandlerAttribute, TContext, MessageHandler<TContext>>>
             MessageHandlers;
-        private static readonly List<ReadyHandler<CallbackQueryHandlerAttribute, TContext, CallbackQueryHandler<TContext>>>
+
+        private static readonly
+            List<ReadyHandler<CallbackQueryHandlerAttribute, TContext, CallbackQueryHandler<TContext>>>
             CallbackQueriesHandlers;
 
         static TelegramBotFrameworkService()
         {
             var builder = new HandlerFunctionBuilder<TContext>();
             MessageHandlers = builder.BuildConstructorFunctions<MessageHandlerAttribute, MessageHandler<TContext>>();
-            CallbackQueriesHandlers = builder.BuildConstructorFunctions<CallbackQueryHandlerAttribute, CallbackQueryHandler<TContext>>();
+            CallbackQueriesHandlers =
+                builder.BuildConstructorFunctions<CallbackQueryHandlerAttribute, CallbackQueryHandler<TContext>>();
         }
 
         public TelegramBotFrameworkService(TContext context,
@@ -55,9 +58,9 @@ namespace TelegramBotFramework
         {
             _logger.LogDebug("Handling update with type {type}", update.Type);
             if (update.Type == UpdateType.Message)
-                await HandleMessage(update.Message ?? throw new NullReferenceException());
+                await HandleMessage(update.Message ?? throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate , update.Type));
             else if (update.Type == UpdateType.CallbackQuery)
-                await HandleCallbackQuery(update.CallbackQuery ?? throw new NullReferenceException());
+                await HandleCallbackQuery(update.CallbackQuery ?? throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate, update.Type));
             _logger.LogDebug("Handling update with type {type} finished.", update.Type);
         }
 
@@ -72,7 +75,16 @@ namespace TelegramBotFramework
 
             foreach (var messageHandler in MessageHandlers)
             {
-                if (messageHandler.Attribute.MustExecute(message) == false)
+                var mustRun = false;
+                foreach (var attribute in messageHandler.Attributes)
+                {
+                    if (attribute.MustExecute(message) == false)
+                        continue;
+                    mustRun = true;
+                    break;
+                }
+
+                if (mustRun == false)
                     continue;
                 if (await CheckCustomRules(
                         messageHandler,
@@ -83,13 +95,26 @@ namespace TelegramBotFramework
                 if (handlerResult)
                     return;
             }
+
+            _logger.LogWarning(
+                "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return true to finish chain.");
         }
+
         private async Task HandleCallbackQuery(CallbackQuery query)
         {
             var userId = query.From.Id;
             foreach (var queryHandler in CallbackQueriesHandlers)
             {
-                if (queryHandler.Attribute.MustExecute(query) == false)
+                var mustRun = false;
+                foreach (var attribute in queryHandler.Attributes)
+                {
+                    if (attribute.MustExecute(query) == false)
+                        continue;
+                    mustRun = true;
+                    break;
+                }
+
+                if (mustRun == false)
                     continue;
                 if (await CheckCustomRules(
                         queryHandler,
@@ -100,16 +125,20 @@ namespace TelegramBotFramework
                 if (handlerResult)
                     return;
             }
+            _logger.LogWarning(
+                "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return true to finish chain.");
         }
-        private async Task<bool> CheckCustomRules<THandler , TAttribute>(
+
+        private async Task<bool> CheckCustomRules<THandler, TAttribute>(
             ReadyHandler<TAttribute, TContext, THandler> handler, long userId) where TAttribute : HandlerAttribute
         {
             if (handler.Rules.Count == 0)
                 return true;
             if (_rules == null || handler.Rules.Count > _rules.Count)
             {
-                _logger.LogCritical(ExceptionsMessages.InvalidCustomRulesConfiguration,handler.Name);
-                throw new TelegramBotFrameworkException(ExceptionsMessages.InvalidCustomRulesConfiguration, handler.Name);
+                _logger.LogCritical(ExceptionsMessages.InvalidCustomRulesConfiguration, handler.Name);
+                throw new TelegramBotFrameworkException(ExceptionsMessages.InvalidCustomRulesConfiguration,
+                    handler.Name);
             }
 
             foreach (var rule in handler.Rules)

@@ -8,6 +8,7 @@ using TelegramBotFramework.Rules;
 
 namespace TelegramBotFramework.Handlers._Common.Attributes
 {
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public abstract class HandlerAttribute : Attribute
     {
         protected HandlerAttribute(UpdateType type)
