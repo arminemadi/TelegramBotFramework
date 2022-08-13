@@ -1,4 +1,6 @@
-﻿using Telegram.Bot.Types.Enums;
+﻿using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using TelegramBotFramework.Rules;
 
 namespace TelegramBotFramework.Handlers.Messages;
 
@@ -21,4 +23,12 @@ public class MessageHandlerAttribute : HandlerAttribute
     public bool Segmented { get; set; } = false;
     public int? SegmentsCount { get; set; }
     public string? SegmentSplit { get; set; }
+
+    public bool MustExecute(Message message , List<ICustomRule>? rules)
+    {
+        var customRulesResult = CheckCustomRules(rules);
+        if (customRulesResult == false)
+            return false;
+        return true;
+    }
 }
