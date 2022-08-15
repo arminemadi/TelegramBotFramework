@@ -18,7 +18,7 @@ namespace TelegramBotFramework.DependencyInjection
         public static void AddTelegramBotFramework(this IServiceCollection collection)
         {
             var builder = new HandlerBuilder();
-            collection.AddScoped<ITelegramBotFrameworkService, TelegramBotFrameworkService>();
+            collection.AddScoped<ITelegramBotFramework, TelegramBotFramework>();
             builder.AddHandlers<MessageHandlerAttribute, MessageHandler>(collection);
             builder.AddHandlers<CallbackQueryHandlerAttribute, CallbackQueryHandler>(collection);
         }

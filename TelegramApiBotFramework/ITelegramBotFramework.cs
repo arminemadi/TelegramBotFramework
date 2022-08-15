@@ -3,7 +3,7 @@ using TelegramBotFramework.Handlers._Common;
 
 namespace TelegramBotFramework
 {
-    public interface ITelegramBotFrameworkService
+    public interface ITelegramBotFramework
     {
         Task Handle(Update update);
     }

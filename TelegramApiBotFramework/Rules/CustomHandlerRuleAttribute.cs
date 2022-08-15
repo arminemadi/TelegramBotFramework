@@ -10,12 +10,17 @@ namespace TelegramBotFramework.Rules
     public class CustomHandlerRuleAttribute : Attribute
     {
         public string Name { get; }
-        public object Value { get; }
+        public object[] Values { get; }
 
-        public CustomHandlerRuleAttribute(string name , object value)
+        public CustomHandlerRuleAttribute(string name ,object[] values)
         {
             Name = name.ToLower();
-            Value = value;
+            Values = values;
+        }
+        public CustomHandlerRuleAttribute(string name, object value)
+        {
+            Name = name.ToLower();
+            Values = new []{value};
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramBotFramework._Common;
 using TelegramBotFramework.Exceptions;
 using TelegramBotFramework.Handlers;
 using TelegramBotFramework.Handlers._Common;
@@ -18,10 +19,10 @@ using TelegramBotFramework.Rules;
 
 namespace TelegramBotFramework
 {
-    public class TelegramBotFrameworkService : ITelegramBotFrameworkService
+    public class TelegramBotFramework : ITelegramBotFramework
     {
         private readonly IServiceProvider _provider;
-        private readonly ILogger<TelegramBotFrameworkService> _logger;
+        private readonly ILogger<TelegramBotFramework> _logger;
         private IReadOnlyDictionary<string, ICustomRule>? _rules;
 
         private static readonly List<ReadyHandler<MessageHandlerAttribute>>
@@ -31,7 +32,7 @@ namespace TelegramBotFramework
             List<ReadyHandler<CallbackQueryHandlerAttribute>>
             CallbackQueriesHandlers;
 
-        static TelegramBotFrameworkService()
+        static TelegramBotFramework()
         {
             var builder = new HandlerBuilder();
             MessageHandlers =
@@ -40,8 +41,8 @@ namespace TelegramBotFramework
                 builder.GetRules<CallbackQueryHandlerAttribute, CallbackQueryHandler>();
         }
 
-        public TelegramBotFrameworkService(IServiceProvider provider,
-            ILogger<TelegramBotFrameworkService> logger)
+        public TelegramBotFramework(IServiceProvider provider,
+            ILogger<TelegramBotFramework> logger)
         {
             _provider = provider;
             _logger = logger;
@@ -51,7 +52,7 @@ namespace TelegramBotFramework
         public async Task Handle(Update update)
         {
             await using var scope = _provider.CreateAsyncScope();
-            var customRules = scope.ServiceProvider.GetService<CustomRules>();
+            var customRules = scope.ServiceProvider.GetService<ICustomRules>();
             _rules = customRules?.Rules;
 
 
@@ -87,12 +88,12 @@ namespace TelegramBotFramework
                     continue;
                 var handler = (MessageHandler)scopeProvider.GetRequiredService(messageHandler.Type);
                 var handlerResult = await handler.Execute(message);
-                if (handlerResult)
+                if (handlerResult == ChainCommand.Stop)
                     return;
             }
 
             _logger.LogWarning(
-                "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return true to finish chain.");
+                "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return STOP to finish chain.");
         }
 
         private async Task HandleCallbackQuery(CallbackQuery query , IServiceProvider scopeProvider)
@@ -109,8 +110,11 @@ namespace TelegramBotFramework
                     continue;
                 var handler = (CallbackQueryHandler)scopeProvider.GetRequiredService(queryHandler.Type);
                 var handlerResult = await handler.Execute(query);
-                if (handlerResult)
+                if (handlerResult == ChainCommand.Stop)
+                {
+                    _logger.LogDebug("Chain stopped by {typeName}" , queryHandler.Name);
                     return;
+                }
             }
 
             _logger.LogWarning(
@@ -135,7 +139,7 @@ namespace TelegramBotFramework
                 if (_rules.TryGetValue(rule.Name, out var userRule))
                 {
                     var value = await userRule.GetValue(userId, chatId);
-                    if (value.Equals(rule.Value) == false)
+                    if (rule.Values.Any(Q=>Q.Equals(value)) == false)
                         return false;
                 }
             }
