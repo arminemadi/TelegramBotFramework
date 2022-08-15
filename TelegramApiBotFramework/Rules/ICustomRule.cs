@@ -9,6 +9,6 @@ namespace TelegramBotFramework.Rules
     public interface ICustomRule
     {
         string Name { get; }
-        Task<object> GetValue(long userId);
+        Task<object> GetValue(long userId , long? chatId);
     }
 }

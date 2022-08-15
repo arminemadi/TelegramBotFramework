@@ -17,7 +17,7 @@ public class MessageHandlerAttribute : TextContentHandlerAttribute
 
     public bool MustExecute(Message message)
     {
-        return MustExecute(message.Text);
+        return MustExecute(message.Text , message.Chat.Type);
     }
 
 

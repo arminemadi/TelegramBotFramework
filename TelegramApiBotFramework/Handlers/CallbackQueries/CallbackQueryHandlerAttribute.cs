@@ -21,7 +21,7 @@ namespace TelegramBotFramework.Handlers.CallbackQueries
 
         public bool MustExecute(CallbackQuery query)
         {
-            return MustExecute(query.Data);
+            return MustExecute(query.Data , query.Message?.Chat.Type);
         }
     }
 }

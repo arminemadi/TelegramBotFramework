@@ -19,6 +19,15 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
         public UpdateType Type { get; }
         public bool AlwaysRun { get; protected set; }
         public int Priority { get; set; }
+        public ChatType[]? ChatTypes { get; set; }
 
+        protected bool HasValidChatType(ChatType? type)
+        {
+            if (ChatTypes == null)
+                return true;
+            if (type == null)
+                return false;
+            return ChatTypes.Any(Q => Q == type);
+        }
     }
 }

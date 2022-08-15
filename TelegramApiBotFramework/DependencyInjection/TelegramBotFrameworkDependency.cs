@@ -15,7 +15,7 @@ namespace TelegramBotFramework.DependencyInjection
         public static void AddTelegramBotFramework<TContext>(this IServiceCollection collection)
             where TContext : HandlerContext
         {
-            collection.AddScoped<TelegramBotFrameworkService<TContext>, TelegramBotFrameworkService<TContext>>();
+            collection.AddScoped<ITelegramBotFrameworkService, TelegramBotFrameworkService<TContext>>();
             collection.AddScoped<TContext, TContext>();
         }
 

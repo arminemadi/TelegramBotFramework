@@ -29,8 +29,10 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
         public int SegmentsCount { get; set; } = -1;
         public string? SegmentSplit { get; set; }
 
-        public bool MustExecute(in string? content)
+        public bool MustExecute(in string? content, in ChatType? type)
         {
+            if (HasValidChatType(type) == false)
+                return false;
             if (AlwaysRun)
                 return true;
 
@@ -50,7 +52,7 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
             return false;
         }
 
-        private string? GetMessage(in string? content)
+        private string? GetMessage(in string? content )
         {
             if (content == null)
                 return null;
@@ -78,7 +80,7 @@ namespace TelegramBotFramework.Handlers._Common.Attributes
             return content.EndsWith(AttributeContent);
         }
 
-        private bool CheckSegments(in string content)
+        private bool CheckSegments(in string content )
         {
             if (Segmented == false)
                 return false;

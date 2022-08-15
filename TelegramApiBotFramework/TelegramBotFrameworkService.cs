@@ -18,7 +18,7 @@ using TelegramBotFramework.Rules;
 
 namespace TelegramBotFramework
 {
-    public class TelegramBotFrameworkService<TContext> where TContext : HandlerContext
+    public class TelegramBotFrameworkService<TContext> : ITelegramBotFrameworkService where TContext : HandlerContext
     {
         private readonly TContext _context;
         private readonly ILogger<TelegramBotFrameworkService<TContext>> _logger;
@@ -34,14 +34,15 @@ namespace TelegramBotFramework
         static TelegramBotFrameworkService()
         {
             var builder = new HandlerFunctionBuilder<TContext>();
-            MessageHandlers = builder.BuildConstructorFunctions<MessageHandlerAttribute, MessageHandler<TContext>>();
+            MessageHandlers =
+                builder.BuildConstructorFunctions<MessageHandlerAttribute, MessageHandler<TContext>>();
             CallbackQueriesHandlers =
                 builder.BuildConstructorFunctions<CallbackQueryHandlerAttribute, CallbackQueryHandler<TContext>>();
         }
 
         public TelegramBotFrameworkService(TContext context,
             ILogger<TelegramBotFrameworkService<TContext>> logger,
-            UserCustomRules? rules = null)
+            CustomRules? rules = null)
         {
             _context = context;
             _logger = logger;
@@ -58,9 +59,13 @@ namespace TelegramBotFramework
         {
             _logger.LogDebug("Handling update with type {type}", update.Type);
             if (update.Type == UpdateType.Message)
-                await HandleMessage(update.Message ?? throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate , update.Type));
+                await HandleMessage(update.Message ??
+                                    throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate,
+                                        update.Type));
             else if (update.Type == UpdateType.CallbackQuery)
-                await HandleCallbackQuery(update.CallbackQuery ?? throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate, update.Type));
+                await HandleCallbackQuery(update.CallbackQuery ??
+                                          throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate,
+                                              update.Type));
             _logger.LogDebug("Handling update with type {type} finished.", update.Type);
         }
 
@@ -75,20 +80,12 @@ namespace TelegramBotFramework
 
             foreach (var messageHandler in MessageHandlers)
             {
-                var mustRun = false;
-                foreach (var attribute in messageHandler.Attributes)
-                {
-                    if (attribute.MustExecute(message) == false)
-                        continue;
-                    mustRun = true;
-                    break;
-                }
-
-                if (mustRun == false)
+                if (messageHandler.Attribute.MustExecute(message) == false)
                     continue;
                 if (await CheckCustomRules(
                         messageHandler,
-                        userId.Value) == false)
+                        userId.Value,
+                        message.Chat.Id) == false)
                     continue;
                 var handler = messageHandler.ConstructorFunc(_context);
                 var handlerResult = await handler.Execute(message);
@@ -105,32 +102,26 @@ namespace TelegramBotFramework
             var userId = query.From.Id;
             foreach (var queryHandler in CallbackQueriesHandlers)
             {
-                var mustRun = false;
-                foreach (var attribute in queryHandler.Attributes)
-                {
-                    if (attribute.MustExecute(query) == false)
-                        continue;
-                    mustRun = true;
-                    break;
-                }
-
-                if (mustRun == false)
+                if (queryHandler.Attribute.MustExecute(query) == false)
                     continue;
                 if (await CheckCustomRules(
                         queryHandler,
-                        userId) == false)
+                        userId,
+                        query.Message?.Chat.Id) == false)
                     continue;
                 var handler = queryHandler.ConstructorFunc(_context);
                 var handlerResult = await handler.Execute(query);
                 if (handlerResult)
                     return;
             }
+
             _logger.LogWarning(
                 "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return true to finish chain.");
         }
 
         private async Task<bool> CheckCustomRules<THandler, TAttribute>(
-            ReadyHandler<TAttribute, TContext, THandler> handler, long userId) where TAttribute : HandlerAttribute
+            ReadyHandler<TAttribute, TContext, THandler> handler, long userId, long? chatId)
+            where TAttribute : HandlerAttribute
         {
             if (handler.Rules.Count == 0)
                 return true;
@@ -145,7 +136,7 @@ namespace TelegramBotFramework
             {
                 if (_rules.TryGetValue(rule.Name, out var userRule))
                 {
-                    var value = await userRule.GetValue(userId);
+                    var value = await userRule.GetValue(userId, chatId);
                     if (value.Equals(rule.Value) == false)
                         return false;
                 }

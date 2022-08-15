@@ -41,12 +41,15 @@ namespace TelegramBotFramework.Handlers._Common.Builders
                     if (attributes.Count == 0)
                         throw new TelegramBotFrameworkException(ExceptionsMessages.FailToCastAttribute);
                     var rules = type.GetCustomAttributes<CustomHandlerRuleAttribute>().ToList();
-                    result.Add(new ReadyHandler<TAttribute, TContext, THandler>(
-                        type.Name, attributes, func, rules));
+                    foreach (var handlerAttribute in attributes)
+                    {
+                        result.Add(new ReadyHandler<TAttribute, TContext, THandler>(
+                            type.Name, handlerAttribute, func, rules));
+                    }
                 }
             }
 
-            return result.OrderByDescending(Q => Q.Attributes.Max(Q => Q.Priority)).ToList();
+            return result.OrderByDescending(Q => Q.Attribute.Priority).ToList();
         }
     }
 }

@@ -15,11 +15,11 @@ namespace TelegramBotFramework.Rules
             Name = name;
         }
         public string Name { get; }
-        public async Task<object> GetValue(long userId)
+        public async Task<object> GetValue(long userId , long? chatId)
         {
-            return _rule ??= await Initialize();
+            return _rule ??= await Initialize(userId , chatId);
         }
 
-        protected abstract Task<object> Initialize();
+        protected abstract Task<object> Initialize(long userId, long? chatId);
     }
 }
