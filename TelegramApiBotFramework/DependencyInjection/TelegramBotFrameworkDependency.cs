@@ -6,37 +6,39 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using TelegramBotFramework.Handlers._Common;
+using TelegramBotFramework.Handlers._Common.Builders;
+using TelegramBotFramework.Handlers.CallbackQueries;
+using TelegramBotFramework.Handlers.Messages;
 using TelegramBotFramework.Rules;
 
 namespace TelegramBotFramework.DependencyInjection
 {
     public static class TelegramBotFrameworkDependency
     {
-        public static void AddTelegramBotFramework<TContext>(this IServiceCollection collection)
-            where TContext : HandlerContext
+        public static void AddTelegramBotFramework(this IServiceCollection collection)
         {
-            collection.AddScoped<ITelegramBotFrameworkService, TelegramBotFrameworkService<TContext>>();
-            collection.AddScoped<TContext, TContext>();
+            var builder = new HandlerBuilder();
+            collection.AddScoped<ITelegramBotFrameworkService, TelegramBotFrameworkService>();
+            builder.AddHandlers<MessageHandlerAttribute, MessageHandler>(collection);
+            builder.AddHandlers<CallbackQueryHandlerAttribute, CallbackQueryHandler>(collection);
         }
 
-        public static void AddTelegramBotFramework<TContext, TRules>(this IServiceCollection collection)
-            where TContext : HandlerContext where TRules : UserCustomRules
+        public static void AddTelegramBotFramework<TRules>(this IServiceCollection collection)
+            where TRules : class , ICustomRules 
         {
-            collection.AddTelegramBotFramework<TContext>();
-            collection.AddScoped<UserCustomRules, TRules>();
+            collection.AddScoped<ICustomRules, TRules>();
+            AddTelegramBotFramework(collection);
         }
 
-        public static void AddTelegramBotFramework<TContext>(this IServiceCollection collection, string token)
-            where TContext : HandlerContext
+        public static void AddTelegramBotFramework(this IServiceCollection collection, string token)
         {
-            collection.AddTelegramBotFramework<TContext>();
+            AddTelegramBotFramework(collection);
             collection.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider => new TelegramBotClient(token));
         }
 
-        public static void AddTelegramBotFramework<TContext, TRules>(this IServiceCollection collection, string token)
-            where TContext : HandlerContext where TRules : UserCustomRules
+        public static void AddTelegramBotFramework<TRules>(this IServiceCollection collection, string token) where TRules :class , ICustomRules
         {
-            collection.AddTelegramBotFramework<TContext, TRules>();
+            AddTelegramBotFramework<TRules>(collection);
             collection.AddSingleton<ITelegramBotClient, TelegramBotClient>(provider => new TelegramBotClient(token));
         }
     }

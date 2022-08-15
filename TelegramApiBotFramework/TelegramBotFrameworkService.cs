@@ -18,58 +18,56 @@ using TelegramBotFramework.Rules;
 
 namespace TelegramBotFramework
 {
-    public class TelegramBotFrameworkService<TContext> : ITelegramBotFrameworkService where TContext : HandlerContext
+    public class TelegramBotFrameworkService : ITelegramBotFrameworkService
     {
-        private readonly TContext _context;
-        private readonly ILogger<TelegramBotFrameworkService<TContext>> _logger;
-        private readonly IReadOnlyDictionary<string, ICustomRule>? _rules;
+        private readonly IServiceProvider _provider;
+        private readonly ILogger<TelegramBotFrameworkService> _logger;
+        private IReadOnlyDictionary<string, ICustomRule>? _rules;
 
-        private static readonly List<ReadyHandler<MessageHandlerAttribute, TContext, MessageHandler<TContext>>>
+        private static readonly List<ReadyHandler<MessageHandlerAttribute>>
             MessageHandlers;
 
         private static readonly
-            List<ReadyHandler<CallbackQueryHandlerAttribute, TContext, CallbackQueryHandler<TContext>>>
+            List<ReadyHandler<CallbackQueryHandlerAttribute>>
             CallbackQueriesHandlers;
 
         static TelegramBotFrameworkService()
         {
-            var builder = new HandlerFunctionBuilder<TContext>();
+            var builder = new HandlerBuilder();
             MessageHandlers =
-                builder.BuildConstructorFunctions<MessageHandlerAttribute, MessageHandler<TContext>>();
+                builder.GetRules<MessageHandlerAttribute, MessageHandler>();
             CallbackQueriesHandlers =
-                builder.BuildConstructorFunctions<CallbackQueryHandlerAttribute, CallbackQueryHandler<TContext>>();
+                builder.GetRules<CallbackQueryHandlerAttribute, CallbackQueryHandler>();
         }
 
-        public TelegramBotFrameworkService(TContext context,
-            ILogger<TelegramBotFrameworkService<TContext>> logger,
-            CustomRules? rules = null)
+        public TelegramBotFrameworkService(IServiceProvider provider,
+            ILogger<TelegramBotFrameworkService> logger)
         {
-            _context = context;
+            _provider = provider;
             _logger = logger;
-            if (rules == null)
-            {
-                _rules = null;
-                return;
-            }
 
-            _rules = rules.Rules;
         }
 
         public async Task Handle(Update update)
         {
+            await using var scope = _provider.CreateAsyncScope();
+            var customRules = scope.ServiceProvider.GetService<CustomRules>();
+            _rules = customRules?.Rules;
+
+
             _logger.LogDebug("Handling update with type {type}", update.Type);
             if (update.Type == UpdateType.Message)
                 await HandleMessage(update.Message ??
                                     throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate,
-                                        update.Type));
+                                        update.Type),scope.ServiceProvider);
             else if (update.Type == UpdateType.CallbackQuery)
                 await HandleCallbackQuery(update.CallbackQuery ??
                                           throw new TelegramBotFrameworkException(ExceptionsMessages.NullUpdate,
-                                              update.Type));
+                                              update.Type) , scope.ServiceProvider);
             _logger.LogDebug("Handling update with type {type} finished.", update.Type);
         }
 
-        private async Task HandleMessage(Message message)
+        private async Task HandleMessage(Message message , IServiceProvider scopeProvider)
         {
             var userId = message.From?.Id;
             if (userId == null)
@@ -87,7 +85,7 @@ namespace TelegramBotFramework
                         userId.Value,
                         message.Chat.Id) == false)
                     continue;
-                var handler = messageHandler.ConstructorFunc(_context);
+                var handler = (MessageHandler)scopeProvider.GetRequiredService(messageHandler.Type);
                 var handlerResult = await handler.Execute(message);
                 if (handlerResult)
                     return;
@@ -97,7 +95,7 @@ namespace TelegramBotFramework
                 "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return true to finish chain.");
         }
 
-        private async Task HandleCallbackQuery(CallbackQuery query)
+        private async Task HandleCallbackQuery(CallbackQuery query , IServiceProvider scopeProvider)
         {
             var userId = query.From.Id;
             foreach (var queryHandler in CallbackQueriesHandlers)
@@ -109,7 +107,7 @@ namespace TelegramBotFramework
                         userId,
                         query.Message?.Chat.Id) == false)
                     continue;
-                var handler = queryHandler.ConstructorFunc(_context);
+                var handler = (CallbackQueryHandler)scopeProvider.GetRequiredService(queryHandler.Type);
                 var handlerResult = await handler.Execute(query);
                 if (handlerResult)
                     return;
@@ -119,8 +117,8 @@ namespace TelegramBotFramework
                 "Handlers never broke chain this could cause issues by adding new handlers. when handler is done with request must return true to finish chain.");
         }
 
-        private async Task<bool> CheckCustomRules<THandler, TAttribute>(
-            ReadyHandler<TAttribute, TContext, THandler> handler, long userId, long? chatId)
+        private async Task<bool> CheckCustomRules<TAttribute>(
+            ReadyHandler<TAttribute> handler, long userId, long? chatId)
             where TAttribute : HandlerAttribute
         {
             if (handler.Rules.Count == 0)

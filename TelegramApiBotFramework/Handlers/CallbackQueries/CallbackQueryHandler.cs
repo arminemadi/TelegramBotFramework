@@ -8,10 +8,8 @@ using TelegramBotFramework.Handlers._Common;
 
 namespace TelegramBotFramework.Handlers.CallbackQueries
 {
-    public abstract class CallbackQueryHandler<TContext> : BaseHandler<TContext,CallbackQuery> where TContext : HandlerContext
+    public abstract class CallbackQueryHandler : BaseHandler<CallbackQuery>
     {
-        protected CallbackQueryHandler(TContext context) : base(context)
-        {
-        }
+
     }
 }

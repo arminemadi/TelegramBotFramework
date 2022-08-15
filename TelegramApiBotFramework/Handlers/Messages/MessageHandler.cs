@@ -4,11 +4,7 @@ using TelegramBotFramework.Handlers._Common;
 
 namespace TelegramBotFramework.Handlers.Messages
 {
-    public abstract class MessageHandler<TContext> : BaseHandler<TContext, Message> where TContext : HandlerContext
+    public abstract class MessageHandler : BaseHandler<Message>
     {
-        protected MessageHandler(TContext context) : base(context)
-        {
-
-        }
     }
 }

@@ -18,10 +18,4 @@ namespace TelegramBotFramework.Rules
         }
         public IReadOnlyDictionary<string, ICustomRule> Rules { get; }
     }
-
-    public interface ICustomRules
-    {
-        IReadOnlyDictionary<string, ICustomRule> Rules { get; }
-
-    }
 }
