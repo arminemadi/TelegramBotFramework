@@ -1,11 +1,11 @@
+C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\bin\Debug\net6.0\TelegramBotFramework.deps.json
+C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\bin\Debug\net6.0\TelegramBotFramework.dll
+C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\bin\Debug\net6.0\TelegramBotFramework.pdb
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.csproj.AssemblyReference.cache
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.AssemblyInfoInputs.cache
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.AssemblyInfo.cs
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.csproj.CoreCompileInputs.cache
-C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\bin\Debug\net6.0\TelegramBotFramework.deps.json
-C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\bin\Debug\net6.0\TelegramBotFramework.dll
-C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\bin\Debug\net6.0\TelegramBotFramework.pdb
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.dll
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\refint\TelegramBotFramework.dll
 C:\Users\Armin\source\repos\TelegramApiBotFramework\TelegramApiBotFramework\obj\Debug\net6.0\TelegramBotFramework.pdb
